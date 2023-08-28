@@ -4,7 +4,8 @@ import morgan from "morgan";
 
 import * as middleware from "./utils/middleware.js";
 import helloRoute from "./routes/helloRouter.js";
-import init from "./utils/redis.js";
+import getBusInfo from "./utils/transit.js";
+import { createClient } from "redis";
 
 const app = express();
 
@@ -22,18 +23,36 @@ app.get("/", (req, res) => {
   res.status(200).send({ status: "ok" });
 });
 
-
 // BUS
 app.get("/bus", async (req, res) => {
-  const redis = init();
+  const client = createClient({
+    url: process.env.REDIS_URL,
+  });
 
-  const bus = await redis.get("bus:31");
+  client.on("error", (err) => console.log("Redis Client Error", err));
+  await client.connect();
+
+  let bus = await client.get("bus:31");
+  res.setHeader("X-data-source", "Redis");
 
   if (!bus) {
-    return res.status(404).send({ error: "Bus not found" });
+    const busData = await getBusInfo();
+
+    bus = JSON.stringify(busData);
+
+    await client.set("bus:31", bus, {
+      // Expire in 30 mins
+      EX: 60 * 30, 
+    });
+
+    res.setHeader("X-data-source", "Transit-API");
   }
 
-  res.status(200).send(bus);
+  bus = JSON.parse(bus);
+
+  res.status(200).json(bus);
+
+  await client.disconnect();
 });
 
 app.use("/hello", helloRoute);
