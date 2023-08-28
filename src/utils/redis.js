@@ -20,3 +20,5 @@ const init = async () => {
 
   return client;
 };
+
+export default init;

@@ -4,6 +4,7 @@ import morgan from "morgan";
 
 import * as middleware from "./utils/middleware.js";
 import helloRoute from "./routes/helloRouter.js";
+import init from "./utils/redis.js";
 
 const app = express();
 
@@ -23,8 +24,16 @@ app.get("/", (req, res) => {
 
 
 // BUS
-app.get("/bus", (req, res) => {
-  res.status(200).send({ status: "ok" });
+app.get("/bus", async (req, res) => {
+  const redis = init();
+
+  const bus = await redis.get("bus:31");
+
+  if (!bus) {
+    return res.status(404).send({ error: "Bus not found" });
+  }
+
+  res.status(200).send(bus);
 });
 
 app.use("/hello", helloRoute);
