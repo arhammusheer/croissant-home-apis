@@ -21,6 +21,12 @@ app.get("/", (req, res) => {
   res.status(200).send({ status: "ok" });
 });
 
+
+// BUS
+app.get("/bus", (req, res) => {
+  res.status(200).send({ status: "ok" });
+});
+
 app.use("/hello", helloRoute);
 
 // custom middleware
