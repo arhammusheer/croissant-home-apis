@@ -76,7 +76,7 @@ app.get("/finance-news", async (req, res) => {
 
     if (!news) {
       const newsData = await axios.get(
-        `https://api.polygon.io/v2/reference/news?limit=50&apiKey=${POLYGON_API_KEY}`
+        `https://api.polygon.io/v2/reference/news?limit=50&apiKey=${process.env.POLYGON_API_KEY}`
       );
 
       news = JSON.stringify(newsData.data.results);
