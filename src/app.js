@@ -6,6 +6,7 @@ import * as middleware from "./utils/middleware.js";
 import helloRoute from "./routes/helloRouter.js";
 import getBusInfo from "./utils/transit.js";
 import { createClient } from "redis";
+import axios from "axios";
 
 const app = express();
 
@@ -59,6 +60,43 @@ app.get("/bus", async (req, res) => {
   res.status(200).json(bus);
 
   await client.disconnect();
+});
+
+app.get("/finance-news", async (req, res) => {
+  const client = createClient({
+    url: process.env.REDIS_URL,
+  });
+
+  client.on("error", (err) => console.log("Redis Client Error", err));
+  await client.connect();
+
+  const getNews = async () => {
+    let news = await client.get("finance-news");
+    res.setHeader("X-data-source", "Redis");
+
+    if (!news) {
+      const newsData = await axios.get(
+        `https://api.polygon.io/v2/reference/news?limit=50&apiKey=${POLYGON_API_KEY}`
+      );
+
+      news = JSON.stringify(newsData.data.results);
+
+      await client.set("finance-news", news, {
+        // Expire in 30 mins
+        EXAT: Date.now() + 1800,
+      });
+
+      res.setHeader("X-data-source", "Polygon-API");
+    }
+
+    news = JSON.parse(news);
+
+    return news;
+  };
+
+  const news = await getNews();
+
+  res.status(200).json(news);
 });
 
 app.use("/hello", helloRoute);
