@@ -62,6 +62,51 @@ app.get("/bus", async (req, res) => {
   await client.disconnect();
 });
 
+// Bus for embedded devices: Returns integer
+app.get("/bus-embedded", async (req, res) => {
+  const client = createClient({
+    url: process.env.REDIS_URL,
+  });
+
+  client.on("error", (err) => console.log("Redis Client Error", err));
+  await client.connect();
+
+  let bus = await client.get("bus:31");
+  res.setHeader("X-data-source", "Redis");
+
+  if (!bus) {
+    const busData = await getBusInfo();
+
+    bus = JSON.stringify(busData);
+
+    // Expire 30s after first bus left. or after 30 mins whichever is less
+    const expiresAt =
+      busData &&
+      busData.route_departures[0].itineraries[0].schedule_items[0]
+        .departure_time + 30;
+
+    await client.set("bus:31", bus, {
+      // Expire in 30 mins
+      EXAT: expiresAt > Date.now() + 1800 ? Date.now() + 1800 : expiresAt,
+    });
+
+    res.setHeader("X-data-source", "Transit-API");
+  }
+
+  bus = JSON.parse(bus);
+
+  const nextBus =
+    bus.route_departures[0].itineraries[0].schedule_items[0].departure_time;
+
+  const now = Math.floor(Date.now() / 1000);
+
+  const timeToNextBus = nextBus - now;
+
+  res.status(200).json(timeToNextBus);
+
+  await client.disconnect();
+});
+
 app.get("/finance-news", async (req, res) => {
   const client = createClient({
     url: process.env.REDIS_URL,
