@@ -26,7 +26,7 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
 
   // Redis cache
   const cached = await client.get(`umts:${bus_number_int}`);
-  console.log("cached", cached)
+  console.log("cached", cached);
 
   let busData = [];
 
@@ -46,7 +46,7 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
   );
   // 600 seconds or 60 seconds before the next departure
   const expiry =
-    next_edt_in_seconds - 600 > 60 ? 600 : next_edt_in_seconds - 60;
+    next_edt_in_seconds - 600 > 60 ? 600 : next_edt_in_seconds > 60 ? 60 : 1;
 
   await client.set(`umts:${bus_number_int}`, JSON.stringify(busData), {
     EX: expiry,
