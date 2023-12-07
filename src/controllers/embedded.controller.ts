@@ -43,9 +43,7 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
 
   // EDT is in Eastern Time, so we need to convert it to UTC
   const edt_date = new Date(next_departure.edt);
-  const utc_edt = new Date(
-    edt_date.getTime() + edt_date.getTimezoneOffset() * 60000
-  );
+  const utc_edt = edt_date;
 
   const next_edt_in_seconds = Math.round(
     (utc_edt.getTime() - Date.now()) / 1000
