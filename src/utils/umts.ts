@@ -30,7 +30,7 @@ const getEDTFromUMTS = async (bus_number: 30 | 31) => {
   }
 
   const response = departures.RouteDirections[0].Departures.map((d) => ({
-    edt: d.EDTLocalTime,
+    edt: d.EDT,
     trip_headsign: d.Trip.InternalSignDesc,
     trip_direction: d.Trip.TripDirection,
   }));
