@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { createClient } from "redis";
 import getEDTFromUMTS from "../utils/umts";
+import { DateTime } from "luxon";
 
 const allowed_routes = [30, 31];
 
@@ -43,8 +44,7 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
 
   const edt = next_departure.edt;
 
-  const d = new Date(edt).toLocaleString("en-US", {
-    timeZone: "America/New_York",
-  });
+  const d = DateTime.fromISO(edt, { zone: "America/New_York" });A
+
   return res.json(d);
 };
