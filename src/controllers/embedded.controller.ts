@@ -46,5 +46,15 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
 
   const d = DateTime.fromISO(edt, { zone: "America/New_York" });
 
-  return res.json(d);
+  const bus_time_in_seconds = Math.floor(d.diffNow("seconds").seconds);
+
+  const expiresIn =
+    bus_time_in_seconds > 250 ? 250 : bus_time_in_seconds > 50 ? 50 : 1;
+  if (!cached) {
+    await client.set(`umts:${bus_number_int}`, JSON.stringify(busData), {
+      EX: expiresIn,
+    });
+  }
+
+  res.status(200).json(bus_time_in_seconds);
 };
