@@ -31,9 +31,14 @@ umtsRouter.get("/:bus_number", async (req, res) => {
 });
 
 umtsRouter.get("/:bus_number/embedded", (req, res) => {
-  const { bus_number } = req.params as { bus_number: string };
+  try {
+    const { bus_number } = req.params as { bus_number: string };
 
-  embeddedBus(bus_number, res);
+    embeddedBus(bus_number, res);
+  } catch (error) {
+    console.log(error);
+    res.json(9999);
+  }
 });
 
 export default umtsRouter;
