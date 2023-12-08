@@ -44,7 +44,7 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
 
   const edt = next_departure.edt;
 
-  const d = DateTime.fromISO(edt, { zone: "America/New_York" });A
+  const d = DateTime.fromISO(edt, { zone: "America/New_York" });
 
   return res.json(d);
 };
