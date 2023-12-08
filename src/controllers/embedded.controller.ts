@@ -41,34 +41,10 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
 
   const next_departure = busData[0];
 
-  // EDT is in Eastern Time always
   const edt = next_departure.edt;
 
-  const t = new Intl.DateTimeFormat("en-US", {
+  const d = new Date(edt).toLocaleString("en-US", {
     timeZone: "America/New_York",
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
   });
-
-  const edt_time = t.format(new Date(edt));
-
-  // EDT in seconds
-  const utc_edt = new Date(edt);
-
-  const next_edt_in_seconds = Math.round(
-    (utc_edt.getTime() - Date.now()) / 1000
-  );
-
-  // 600 seconds or 60 seconds before the next departure
-  const expiry =
-    next_edt_in_seconds - 600 > 60 ? 600 : next_edt_in_seconds > 60 ? 60 : 1;
-
-  await client.set(`umts:${bus_number_int}`, JSON.stringify(busData), {
-    EX: expiry,
-  });
-
-  await client.disconnect();
-
-  return res.json(next_edt_in_seconds);
+  return res.json(d);
 };
