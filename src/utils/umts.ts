@@ -13,7 +13,18 @@ const getEDTFromUMTS = async (bus_number: 30 | 31) => {
 
   const url = busURL(bus_number);
 
-  const data = (await axios.get(url)).data as typeof EXAMPLE_DATA;
+  const network_response = await axios.get(url);
+
+  if (network_response.status !== 200) {
+    return [];
+  }
+
+  if (!network_response.data.length) {
+    console.log(network_response.data);
+    return [];
+  }
+
+  const data = network_response.data as typeof EXAMPLE_DATA;
 
   const departures = data.find((d) => d.StopId === stop);
 
