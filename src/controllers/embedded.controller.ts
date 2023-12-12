@@ -14,13 +14,13 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
   const bus_number_int = parseInt(bus_number);
 
   if (!bus_number_int) {
-    res.status(400).json(999);
+    res.status(400).json(-1);
     client.disconnect();
     return;
   }
 
   if (!allowed_routes.includes(bus_number_int)) {
-    res.status(400).json(999);
+    res.status(400).json(-1);
     client.disconnect();
     return;
   }
@@ -41,6 +41,12 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
   }
 
   const next_departure = busData[0];
+
+  if (!next_departure) {
+    res.status(200).json(-1);
+    client.disconnect();
+    return;
+  }
 
   const edt = next_departure.edt;
 

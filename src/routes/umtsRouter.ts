@@ -37,7 +37,7 @@ umtsRouter.get("/:bus_number/embedded", (req, res) => {
     embeddedBus(bus_number, res);
   } catch (error) {
     console.log(error);
-    res.json(9999);
+    res.json(-1);
   }
 });
 
