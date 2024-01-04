@@ -73,7 +73,7 @@ export const morganwrapped = () => {
       );
     case LogLevel.PROD:
       return morgan(
-        `:remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"`
+        `[${OWNER}] :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"`
       );
     case LogLevel.TEST:
       return morgan(
