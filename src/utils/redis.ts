@@ -3,6 +3,8 @@ import { logger } from "./logger";
 
 const LOG_OWNER = "redis";
 
+const DEFAULT_EXPIRE_TIME = 60 * 10; // 10 minutes
+
 export default class BusTimeCache {
   private _client!: Redis;
   private static instance: BusTimeCache;
@@ -17,13 +19,32 @@ export default class BusTimeCache {
     logger.info(LOG_OWNER, "Redis client created");
   }
 
-  public async getBusTime(bus_number: string) {
-    const bus = await this._client.get(`bus:${bus_number}`);
+  // Bus time cache
+  public async getBusTime(bus_number: number) {
+    const bus_time = await this._client.get(bus_number.toString());
 
-    if (!bus) {
+    if (!bus_time) {
+      logger.info(LOG_OWNER, `No bus time found for bus ${bus_number}`);
       return null;
     }
 
-    return JSON.parse(bus);
+    logger.info(LOG_OWNER, `Found bus time for bus ${bus_number}: ${bus_time}`);
+
+    return JSON.parse(bus_time);
+  }
+
+  public async setBusTime(
+    bus_number: number,
+    bus_time: number,
+    expire_time: number = DEFAULT_EXPIRE_TIME
+  ) {
+    await this._client.set(
+      bus_number.toString(),
+      bus_time.toString(),
+      "EX",
+      expire_time
+    );
+
+    logger.info(LOG_OWNER, `Set bus time for bus ${bus_number} to ${bus_time}`);
   }
 }
