@@ -1,15 +1,13 @@
 import { Router } from "express";
 import getEDTFromUMTS from "../utils/umts";
-import { createClient } from "redis";
 import { embeddedBus } from "../controllers/embedded.controller";
+import { logger } from "../utils/logger";
+
+const LOG_OWNER = "umtsRouter";
 
 const umtsRouter = Router();
 
 const allowed_routes = [30, 31];
-
-const client = createClient({
-  url: process.env.REDIS_URL,
-});
 
 umtsRouter.get("/:bus_number", async (req, res) => {
   const { bus_number } = req.params as { bus_number: string };
@@ -36,7 +34,7 @@ umtsRouter.get("/:bus_number/embedded", (req, res) => {
 
     embeddedBus(bus_number, res);
   } catch (error) {
-    console.log(error);
+    logger.error(LOG_OWNER, error);
     res.json(-1);
   }
 });

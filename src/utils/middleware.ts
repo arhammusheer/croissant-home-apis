@@ -1,11 +1,13 @@
 import { ErrorRequestHandler, RequestHandler } from "express";
-import * as logger from "./logger";
+import { logger } from "./logger";
+
+const LOG_OWNER = "middleware";
 
 export const unknownEndpoint: RequestHandler = (req, res) => {
   res.status(404).send({ error: `uknonwn endpoint` });
 };
 
 export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
-  logger.error(error.message);
+  logger.error(LOG_OWNER, error.message);
   next(error);
 };

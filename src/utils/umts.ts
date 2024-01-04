@@ -5,36 +5,37 @@ const stop_ids = {
   31: 157,
 };
 
+/**
+ * Get the URL for the bus number
+ * @param bus_number 30 or 31
+ * @returns
+ */
 const busURL = (bus_number: 30 | 31) =>
   `https://bustracker.pvta.com/InfoPoint/rest/StopDepartures/get/${stop_ids[bus_number]}`;
 
 const getEDTFromUMTS = async (bus_number: 30 | 31) => {
+  // Stop ID
   const stop = stop_ids[bus_number];
 
+  // URL to get data from for stop
   const url = busURL(bus_number);
 
+  // Get data from URL
   const network_response = await axios.get(url);
 
+  // If the status is not 200, return an empty array
   if (network_response.status !== 200) {
     return [];
   }
 
+  // 
   if (!network_response.data.length) {
-    console.log(network_response.data);
     return [];
   }
 
   const data = network_response.data as typeof EXAMPLE_DATA;
 
   const departures = data.find((d) => d.StopId === stop);
-
-  /*
-	{
-    edt: d.EDTLocalTime,
-    trip_headsign: d.Trip.InternalSignDesc,
-    trip_direction: d.Trip.TripDirection,
-  }
-	*/
 
   if (!departures || !departures.RouteDirections[0].Departures) {
     return [];
