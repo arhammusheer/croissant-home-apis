@@ -51,6 +51,12 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
     await cache.setBusTime(bus_number_int, next_bus, expiresIn);
   }
 
+  if (setCache) {
+    res.header("X-Data-Source", "UMTS");
+  } else {
+    res.header("X-Data-Source", "Cache");
+  }
+
   res.status(200).json(bus_time_in_seconds);
 };
 
