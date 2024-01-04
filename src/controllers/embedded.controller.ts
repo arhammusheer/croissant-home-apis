@@ -42,7 +42,8 @@ export const embeddedBus = async (bus_number: string, res: Response) => {
   
   // Cache the bus time
   // Expire in 60 seconds before the bus arrives or 30 mins (whichever is first)
-  const expiresIn = Math.min(bus_time_in_seconds - 60, 60 * 30);
+  const expire_time = Math.max(bus_time_in_seconds - 60, 60); // For zero or negative bus times, expire in 60 seconds
+  const expiresIn = Math.min(expire_time, 30 * 60);
 
 
   await cache.setBusTime(bus_number_int, bus_time_in_seconds, expiresIn);
