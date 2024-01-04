@@ -28,23 +28,32 @@ export default class BusTimeCache {
       return null;
     }
 
-    logger.info(LOG_OWNER, `Found bus time for bus ${bus_number}: ${bus_time}`);
+    logger.info(
+      LOG_OWNER,
+      `Found bus time for bus ${bus_number}: ${bus_time}`
+    );
 
     return JSON.parse(bus_time);
   }
 
   public async setBusTime(
     bus_number: number,
-    bus_time: number,
+    bus_time: JSON,
     expire_time: number = DEFAULT_EXPIRE_TIME
   ) {
     await this._client.set(
       bus_number.toString(),
-      bus_time.toString(),
+      JSON.stringify(bus_time),
       "EX",
       expire_time
     );
 
     logger.info(LOG_OWNER, `Set bus time for bus ${bus_number} to ${bus_time}`);
+  }
+
+  public async deleteBusTime(bus_number: number) {
+    await this._client.del(bus_number.toString());
+
+    logger.info(LOG_OWNER, `Deleted bus time for bus ${bus_number}`);
   }
 }
