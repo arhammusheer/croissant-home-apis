@@ -9,6 +9,7 @@ import { errorHandler, unknownEndpoint } from "./utils/middleware";
 import router from "./routes/root.router";
 import { logger, morganwrapped } from "./utils/logger";
 import BusTimeCache from "./utils/redis";
+import { prometheus } from "./utils/prometheus";
 
 const app = express();
 
@@ -22,6 +23,9 @@ app.use(cors());
 
 // request logger middleware
 app.use(morganwrapped());
+
+// Prometheus metrics
+app.use(prometheus);
 
 // Routes
 app.use(router);
