@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { embeddedBus } from "../controllers/embedded.controller";
 import umtsRouter from "./umtsRouter";
+import profilesRouter from "./profiles.router";
 
 const router = Router();
 
@@ -18,5 +19,7 @@ router.get("/bus-embedded", async (req, res) => {
 
   embeddedBus(bus_number, res);
 });
+
+router.use("/profile", profilesRouter);
 
 export default router;

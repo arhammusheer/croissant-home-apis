@@ -1,0 +1,1 @@
+export const KINDE_BUSINESS_NAME = "croissant";
