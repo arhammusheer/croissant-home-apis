@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-interface DBProfile {
+export interface DBProfile {
   theme: "light" | "dark";
   notifications: boolean;
 }
