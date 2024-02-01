@@ -1,5 +1,5 @@
 import AuthProvider from "./auth.class";
-import DBProvider from "./database.class";
+import DBProvider, { DBProfile } from "./database.class";
 
 export default class ProfileProvider {
   private authProvider: AuthProvider;
@@ -21,6 +21,16 @@ export default class ProfileProvider {
       ...dbProfile,
     };
 
-		return profile;
+    return profile;
+  }
+
+  async setProfile(profile: DBProfile) {
+    const authProfile = await this.authProvider.getProfile();
+
+    if (!authProfile.id) {
+      throw new Error("Missing user ID");
+    }
+
+    await this.dbProvider.setProfile(authProfile.id.toString(), profile);
   }
 }

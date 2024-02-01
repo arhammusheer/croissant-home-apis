@@ -37,7 +37,7 @@ export const setProfile = async (
       return;
     }
 
-    // const profile = await new ProfileProvider(accessToken).setProfile(body);
+    const profile = await new ProfileProvider(accessToken).setProfile(body);
 
     res.status(200).json({ status: "ok" });
   } catch (error) {
