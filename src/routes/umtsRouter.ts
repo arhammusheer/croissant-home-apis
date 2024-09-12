@@ -55,6 +55,7 @@ umtsRouter.get("/:bus_number/embedded", (req, res) => {
     const { bus_number } = req.params as { bus_number: string };
 
     if (downTimeCheck(parseInt(bus_number))) {
+      console.log(`Down time for bus ${bus_number}. Request rejected.`);
       res.status(503).json(-1);
       return;
     }
